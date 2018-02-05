@@ -1,1 +1,1 @@
-# coding_dojo_essence
+Some practices that I think were worth looking back in coding dojo.
