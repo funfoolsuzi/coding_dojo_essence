@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Wall Assignment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        nav {
+            display: flex;
+        }
+        nav>*{
+            flex:1
+        }
+        .alignright{
+            text-align: right;
+        }
+        textarea{
+            display:block;
+        }
+        .msg_ta{
+            width:80%;
+            height: 200px;
+            margin: 0 auto;
+        }
+        .comment_ta{
+            width:80%;
+            height: 100px;
+            margin: 0 auto;
+        }
+        .message_board{
+            width: 90%;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <h2>CodingDojo Wall</h2>
+        <div class="alignright">
+            {% if session["user"] %}
+            Welcome {{ session["user"]["first_name"] }}
+            <form action="/logout" method="post">
+                <input hidden name="action" value="logout" />
+                <input type="submit" value="Log Out!" />
+            </form>
+            {% endif %}
+        </div>
+
+    </nav>
+    {% with ms = get_flashed_messages() %}
+        {% for m in ms %}
+            <p style="color:red">{{m}}</p>
+        {% endfor %}
+    {% endwith %}
+    <hr />
+    {% if not session["user"] %}
+    <h3>Sign Up</h3>
+    <form action="/users" method="post">
+        <input type="text" name="first_name" placeholder="First Name" />
+        <br />
+        <input type="text" name="last_name" placeholder="Last Name" />
+        <br />
+        <input type="text" name="email" placeholder="Email" />
+        <br />
+        <input type="password" name="password" placeholder="Password" />
+        <br />
+        <input type="password" name="c_password" placeholder="Confirm Password" />
+        <br />
+        <input type="submit" value="register!" />
+    </form>
+    <br />
+    <h3>Log In</h3>
+    <form action="/login" method="post">
+        <input type="text" name="email" placeholder="Email" />
+        <br />
+        <input type="password" name="password" placeholder="Password" />
+        <br /> 
+        <input type="submit" value="Log In" />
+    </form>
+    {% else %}
+    <div class="alignright">
+        <form action="/message" method="post">
+            <textarea class="msg_ta" name="message"></textarea>
+            <br />
+            <input type="submit" value="post a message" />
+        </form>
+    </div>
+    {% endif %}
+    <div class="message_board">
+        <h2>Message Board</h2>
+        {% for msg in messages %}
+        <div>
+            <h4>{{msg.name}} === {{msg.created_at}}</h4>
+            <p>{{msg.message}}</p>
+            {% for comment in msg.comments %}
+                <h4>{{comment.name}} === {{comment.created_at}}</h4>
+                <p>{{comment.comment}}</p>
+            {% endfor %}
+            {% if session["user"] %}
+                <div class="alignright">
+                    <form action="/comments/{{msg.id}}" method="post">
+                        <textarea class="comment_ta" name="comment"></textarea>
+                        <br />
+                        <input type="submit" value="comment" />
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
